@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorkSmart AI | Productivity Assistant</title>
+<style>
+:root {
+  --navy: #142d4e;
+  --blue: #3478c7;
+  --light: #eef5fc;
+  --white: #ffffff;
+  --text: #243247;
+  --muted: #66758a;
+  --border: #dce5ef;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f8fc;
+  color: var(--text);
+}
+header {
+  background: var(--navy);
+  color: white;
+  padding: 24px 6%;
+}
+header h1 { margin: 0 0 8px; }
+header p { margin: 0; color: #d9e7f8; }
+.container { max-width: 1150px; margin: auto; padding: 25px 18px; }
+nav { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 24px; }
+nav button, .primary {
+  border: 0;
+  border-radius: 8px;
+  background: var(--blue);
+  color: white;
+  padding: 11px 15px;
+  cursor: pointer;
+  font-weight: bold;
+}
+nav button { background: white; color: var(--navy); border: 1px solid var(--border); }
+nav button.active { background: var(--navy); color: white; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 15px; margin-bottom: 24px; }
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 3px 12px #17365b0b;
+  margin-bottom: 16px;
+}
+.stat-label { color: var(--muted); font-size: 14px; }
+.stat-number { font-size: 29px; font-weight: bold; color: var(--navy); margin-top: 10px; }
+h2 { color: var(--navy); margin-top: 0; }
+label { display: block; font-weight: bold; margin: 13px 0 6px; }
+input, select, textarea {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #cbd6e3;
+  border-radius: 7px;
+  font: inherit;
+  background: white;
+}
+textarea { min-height: 115px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+.task { display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); padding: 13px 0; }
+.task input { width: auto; }
+.task-title { flex: 1; }
+.done { text-decoration: line-through; color: var(--muted); }
+.priority { font-size: 12px; padding: 5px 8px; border-radius: 20px; background: var(--light); }
+.delete { background: #fceaea; color: #a52c2c; border: 0; border-radius: 6px; padding: 7px; cursor: pointer; }
+.output { background: var(--light); border-radius: 8px; padding: 14px; white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 14px; }
+.small { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.panel { display: none; }
+.panel.active { display: block; }
+footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px; }
+@media(max-width:600px) {
+  .form-row { grid-template-columns: 1fr; }
+  header { padding: 22px 18px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>WorkSmart AI</h1>
+  <p>Workplace Productivity Assistant · Work smarter, not harder.</p>
+</header>
+<main class="container">
+  <nav aria-label="Dashboard sections">
+    <button class="active" data-panel="overview">Overview</button>
+    <button data-panel="tasks">Task Manager</button>
+    <button data-panel="email">AI Email Assistant</button>
+    <button data-panel="meetings">Meeting Notes</button>
+    <button data-panel="report">Productivity Report</button>
+    <button data-panel="ethics">Responsible AI</button>
+  </nav>
+
+  <section id="overview" class="panel active">
+    <h2>Productivity overview</h2>
+    <p>Organise work, prepare professional communications, and turn meeting notes into clear actions.</p>
+    <div class="stats">
+      <div class="card"><div class="stat-label">Total tasks</div><div class="stat-number" id="total">0</div></div>
+      <div class="card"><div class="stat-label">Tasks completed</div><div class="stat-number" id="completed">0</div></div>
+      <div class="card"><div class="stat-label">Completion rate</div><div class="stat-number" id="rate">0%</div></div>
+      <div class="card"><div class="stat-label">Estimated time saved</div><div class="stat-number" id="saved">0 min</div></div>
+    </div>
+    <div class="card">
+      <h2>Quick start</h2>
+      <p>1. Add a task and mark it complete when finished.</p>
+      <p>2. Use the email assistant to prepare a prompt for ChatGPT.</p>
+      <p>3. Convert meeting notes into decisions and action items.</p>
+      <p class="small">AI-generated content must be reviewed by a person before use.</p>
+    </div>
+  </section>
+
+  <section id="tasks" class="panel">
+    <div class="card">
+      <h2>Task manager</h2>
+      <form id="taskForm">
+        <label for="taskName">Task description</label>
+        <input id="taskName" required maxlength="180" placeholder="e.g. Prepare weekly team report">
+        <div class="form-row">
+          <div><label for="priority">Priority</label>
+            <select id="priority"><option>Medium</option><option>High</option><option>Low</option></select>
+          </div>
+          <div><label for="minutes">Estimated minutes saved</label>
+            <input id="minutes" type="number" min="0" max="600" value="10" required>
+          </div>
+        </div>
+        <p class="small">Time savings are estimates for demonstration, not verified measurements.</p>
+        <button class="primary" type="submit">+ Add task</button>
+      </form>
+    </div>
+    <div class="card"><h2>Your tasks</h2><div id="taskList"></div><p id="empty" class="small">No tasks yet. Add your first task above.</p></div>
+  </section>
+
+  <section id="email" class="panel">
+    <div class="card">
+      <h2>AI email assistant</h2>
+      <p>Paste fictional or anonymised email text. The tool prepares a prompt for ChatGPT; it does not send your email.</p>
+      <label for="emailText">Email text</label>
+      <textarea id="emailText" placeholder="Paste a sample email here..."></textarea>
+      <label for="emailAction">What would you like help with?</label>
+      <select id="emailAction">
+        <option value="Summarise the email into key points and action items">Summarise email</option>
+        <option value="Draft a polite, professional reply. Do not invent facts">Draft a professional reply</option>
+        <option value="Identify deadlines, requests, and next steps">Identify deadlines and next steps</option>
+      </select>
+      <button class="primary" onclick="makeEmailPrompt()">Generate prompt</button>
+      <div id="emailOutput" class="output" hidden></div>
+      <button id="copyEmail" class="primary" onclick="copyOutput('emailOutput')" hidden>Copy prompt</button>
+    </div>
+  </section>
+
+  <section id="meetings" class="panel">
+    <div class="card">
+      <h2>Meeting notes assistant</h2>
+      <p>Turn sample notes into an organised meeting summary using ChatGPT.</p>
+      <label for="meetingText">Meeting notes</label>
+      <textarea id="meetingText" placeholder="Example: Team agreed to review the report by Friday..."></textarea>
+      <button class="primary" onclick="makeMeetingPrompt()">Generate prompt</button>
+      <div id="meetingOutput" class="output" hidden></div>
+      <button id="copyMeeting" class="primary" onclick="copyOutput('meetingOutput')" hidden>Copy prompt</button>
+    </div>
+  </section>
+
+  <section id="report" class="panel">
+    <div class="card">
+      <h2>Productivity report</h2>
+      <p id="reportText"></p>
+      <p class="small">This report uses task data saved in this browser. Estimated time saved is user-entered and should be compared with actual task timings before making business claims.</p>
+    </div>
+  </section>
+
+  <section id="ethics" class="panel">
+    <div class="card">
+      <h2>Responsible AI practices</h2>
+      <ul>
+        <li><strong>Privacy:</strong> Use fictional or anonymised examples. Do not paste passwords, customer records, financial details, or confidential company information.</li>
+        <li><strong>Human oversight:</strong> Review and correct all AI-generated emails and summaries before sharing.</li>
+        <li><strong>Accuracy:</strong> Check names, facts, deadlines, tone, and calculations. AI can make mistakes.</li>
+        <li><strong>Transparency:</strong> Explain when AI assists with a work product if workplace policy requires it.</li>
+        <li><strong>Fairness:</strong> Avoid using AI output alone to make consequential decisions about employees or customers.</li>
+        <li><strong>Security:</strong> Task data is stored in this browser's local storage. Avoid using this prototype with sensitive information, especially on shared computers.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+<footer>WorkSmart AI · Educational prototype · Review all AI-assisted work.</footer>
+<script>
+const storageKey = "worksmart-ai-tasks-v1";
+let tasks = [];
+try { tasks = JSON.parse(localStorage.getItem(storageKey) || "[]"); if (!Array.isArray(tasks)) tasks = []; } catch { tasks = []; }
+
+document.querySelectorAll("nav button").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    button.classList.add("active");
+    document.getElementById(button.dataset.panel).classList.add("active");
+    if (button.dataset.panel === "report") updateReport();
+  });
+});
+
+function saveTasks() {
+  try { localStorage.setItem(storageKey, JSON.stringify(tasks)); }
+  catch { alert("The browser could not save tasks. Check browser storage settings."); }
+  render();
+}
+document.getElementById("taskForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const title = document.getElementById("taskName").value.trim();
+  const minutes = Number(document.getElementById("minutes").value);
+  if (!title || !Number.isFinite(minutes) || minutes < 0 || minutes > 600) return;
+  tasks.push({id: Date.now().toString(36) + Math.random().toString(36).slice(2,7), title, priority: document.getElementById("priority").value, minutes, done:false});
+  event.target.reset();
+  document.getElementById("minutes").value = 10;
+  saveTasks();
+});
+function render() {
+  const list = document.getElementById("taskList");
+  list.replaceChildren();
+  document.getElementById("empty").hidden = tasks.length > 0;
+  tasks.forEach(task => {
+    const row = document.createElement("div"); row.className = "task";
+    const check = document.createElement("input"); check.type = "checkbox"; check.checked = !!task.done; check.setAttribute("aria-label", "Mark task complete");
+    check.addEventListener("change", () => { task.done = check.checked; saveTasks(); });
+    const title = document.createElement("span"); title.className = "task-title" + (task.done ? " done" : ""); title.textContent = task.title;
+    const priority = document.createElement("span"); priority.className = "priority"; priority.textContent = task.priority;
+    const del = document.createElement("button"); del.className = "delete"; del.textContent = "Delete"; del.addEventListener("click", () => { tasks = tasks.filter(t => t.id !== task.id); saveTasks(); });
+    row.append(check, title, priority, del); list.append(row);
+  });
+  updateStats(); updateReport();
+}
+function updateStats() {
+  const done = tasks.filter(t => t.done);
+  document.getElementById("total").textContent = tasks.length;
+  document.getElementById("completed").textContent = done.length;
+  document.getElementById("rate").textContent = (tasks.length ? Math.round(done.length / tasks.length * 100) : 0) + "%";
+  document.getElementById("saved").textContent = done.reduce((sum,t) => sum + (Number(t.minutes)||0),0) + " min";
+}
+function updateReport() {
+  const done = tasks.filter(t => t.done);
+  const minutes = done.reduce((sum,t) => sum + (Number(t.minutes)||0),0);
+  document.getElementById("reportText").textContent =
+    "Tasks recorded: " + tasks.length + "\nTasks completed: " + done.length +
+    "\nCompletion rate: " + (tasks.length ? Math.round(done.length/tasks.length*100) : 0) +
+    "%\nEstimated time saved: " + minutes + " minutes (" + (minutes/60).toFixed(2) +
+    " hours).\n\nThese time savings are estimates entered by the user, not independently verified results.";
+}
+function makeEmailPrompt() {
+  const text = document.getElementById("emailText").value.trim();
+  if (!text) { alert("Please enter sample email text first."); return; }
+  const action = document.getElementById("emailAction").value;
+  showOutput("emailOutput", "copyEmail",
+    "Act as a careful professional workplace assistant.\nTask: " + action +
+    ".\nUse only information contained in the email. Do not invent facts, names, commitments, or deadlines. If information is missing, say so. Use a clear, respectful professional tone. Protect privacy and flag anything that needs human verification.\n\nEmail:\n" + text);
+}
+function makeMeetingPrompt() {
+  const text = document.getElementById("meetingText").value.trim();
+  if (!text) { alert("Please enter sample meeting notes first."); return; }
+  showOutput("meetingOutput", "copyMeeting",
+    "Act as a meeting-notes assistant. Organise the notes into: (1) concise summary, (2) decisions made, (3) action items with owners and deadlines only where explicitly stated, and (4) open questions. Do not invent details. Mark unclear information for human review. Use only the notes provided.\n\nMeeting notes:\n" + text);
+}
+function showOutput(outputId, buttonId, text) {
+  const output = document.getElementById(outputId); output.textContent = text; output.hidden = false;
+  document.getElementById(buttonId).hidden = false;
+}
+async function copyOutput(id) {
+  const text = document.getElementById(id).textContent;
+  try { await navigator.clipboard.writeText(text); alert("Prompt copied. Paste it into ChatGPT to use the AI assistant."); }
+  catch { alert("Copy is unavailable in this browser. Select the prompt text and press Ctrl+C."); }
+}
+render();
+</script>
+</body>
+</html>
